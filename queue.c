@@ -140,25 +140,55 @@ bool q_delete_dup(struct list_head *head)
             if (strcmp(outer_ele->value, inner_ele->value) == 0) {
                 list_del(inner);
                 q_release_element(inner_ele);
+                free(inner);
             }
         }
     }
     return true;
 }
 
-/* Swap every two adjacent nodes */
-void q_swap(struct list_head *head)
-{
-    // https://leetcode.com/problems/swap-nodes-in-pairs/
-}
-
 /* Reverse elements in queue */
-void q_reverse(struct list_head *head) {}
+void q_reverse(struct list_head *head)
+{
+    if (!head)
+        return;
+    struct list_head *curr, *safe;
+    list_for_each_safe (curr, safe, head)
+        list_move(curr, head);
+}
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    if (!head || list_empty(head))
+        return;
+
+    struct list_head *curr, *safe, *group_prev;
+    int count = 0;
+    group_prev = head;
+
+    list_for_each_safe (curr, safe, head) {
+        count++;
+        if (count <= k)
+            continue;
+        LIST_HEAD(tmp_q);
+        count = 0;
+
+        list_cut_position(&tmp_q, group_prev, curr);
+        q_reverse(&tmp_q);
+        list_splice(&tmp_q, group_prev);
+
+        group_prev = safe->prev;
+    }
+}
+
+
+/* Swap every two adjacent nodes */
+void q_swap(struct list_head *head)
+{
+    // https://leetcode.com/problems/swap-nodes-in-pairs/
+    q_reverseK(head, 2);
 }
 
 /* Sort elements of queue in ascending/descending order */
