@@ -245,7 +245,7 @@ int q_merge(struct list_head *head, bool descend)
     // https://leetcode.com/problems/merge-k-sorted-lists/
     if (!head || list_empty(head))
         return 0;
-    queue_contex_t *first_q = list_entry(&head->next, queue_contex_t, chain);
+    queue_contex_t *first_q = list_first_entry(head, queue_contex_t, chain);
     queue_contex_t *curr, *safe;
     list_for_each_entry_safe (curr, safe, head, chain) {
         if (curr == first_q)
