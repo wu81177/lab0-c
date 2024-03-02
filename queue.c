@@ -119,7 +119,6 @@ bool q_delete_mid(struct list_head *head)
     element_t *e = container_of(forward, element_t, list);
     list_del(forward);
     q_release_element(e);
-    free(forward);
     return true;
 }
 
