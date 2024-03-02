@@ -149,7 +149,7 @@ bool q_delete_dup(struct list_head *head)
 /* Reverse elements in queue */
 void q_reverse(struct list_head *head)
 {
-    if (!head)
+    if (!head || head->prev == head->next)
         return;
     struct list_head *curr, *safe;
     list_for_each_safe (curr, safe, head)
@@ -160,7 +160,7 @@ void q_reverse(struct list_head *head)
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
-    if (!head || list_empty(head))
+    if (!head || head->prev == head->next)
         return;
 
     struct list_head *curr, *safe, *group_prev;
@@ -187,6 +187,8 @@ void q_reverseK(struct list_head *head, int k)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    if (!head)
+        return;
     q_reverseK(head, 2);
 }
 
