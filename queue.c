@@ -192,58 +192,48 @@ void q_swap(struct list_head *head)
     q_reverseK(head, 2);
 }
 
-static struct list_head *merge_lists(struct list_head *left,
-                                     struct list_head *right)
+static void merge_two(struct list_head *l1, struct list_head *l2, bool descend)
 {
-    struct list_head merged_list;
-    INIT_LIST_HEAD(&merged_list);
+    if (!l1 || !l2)
+        return;
+    LIST_HEAD(tmp_head);
 
-    while (!list_empty(left) && !list_empty(right)) {
-        if (strcmp(list_entry(left, element_t, list)->value,
-                   list_entry(right, element_t, list)->value) < 0) {
-            list_move_tail(left->next, &merged_list);
+    while (!list_empty(l1) && !list_empty(l2)) {
+        element_t *ele_l1 = list_first_entry(l1, element_t, list);
+        element_t *ele_l2 = list_first_entry(l2, element_t, list);
+
+        if (descend == (strcmp(ele_l1->value, ele_l2->value) < 0)) {
+            list_move_tail(l2->next, &tmp_head);
         } else {
-            list_move_tail(right->next, &merged_list);
+            list_move_tail(l1->next, &tmp_head);
         }
     }
 
-    list_splice_tail(left, &merged_list);
-    list_splice_tail(right, &merged_list);
-
-    return merged_list.next;
+    list_splice(&tmp_head, l2);
+    list_splice_init(l2, l1);
 }
 
 /* Sort elements of queue in ascending/descending order */
 void q_sort(struct list_head *head, bool descend)
 {
-    if (list_empty(head) || list_is_singular(head)) {
+    if (!head || head->prev == head->next)
         return;
-    }
+    struct list_head *mid;
+    struct list_head *left = head;
+    struct list_head *right = head;
+    do {
+        left = left->next;
+        right = right->prev;
+    } while (left != right && left->next != right);
 
-    struct list_head left, right;
-    INIT_LIST_HEAD(&left);
-    INIT_LIST_HEAD(&right);
+    mid = left;
 
-    struct list_head *slow = head;
-    struct list_head *fast = head->next;
+    LIST_HEAD(toMerge);
+    list_cut_position(&toMerge, mid, head->prev);
 
-    while (fast && fast->next) {
-        list_move_tail(slow->next, &left);
-        slow = slow->next;
-        fast = fast->next->next;
-    }
-
-    list_move_tail(slow->next, &left);
-    INIT_LIST_HEAD(&right);
-
-    q_sort(&left, descend);
-    q_sort(&right, descend);
-
-    INIT_LIST_HEAD(head);
-    list_splice_tail(merge_lists(&left, &right), head);
-
-    if (!descend)
-        q_reverse(head);
+    q_sort(head, descend);
+    q_sort(&toMerge, descend);
+    merge_two(head, &toMerge, descend);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to
@@ -306,6 +296,6 @@ int q_merge(struct list_head *head, bool descend)
         list_splice_init(curr->q, first_q->q);
         list_del_init(&curr->chain);
     }
-    // q_sort(first_q->q, descend);
+    q_sort(first_q->q, descend);
     return first_q->size;
 }
