@@ -178,7 +178,7 @@ void q_reverseK(struct list_head *head, int k)
 
     list_for_each_safe (curr, safe, head) {
         count++;
-        if (count <= k)
+        if (count < k)
             continue;
         LIST_HEAD(tmp_q);
         count = 0;
