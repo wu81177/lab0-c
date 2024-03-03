@@ -25,6 +25,8 @@ struct list_head *q_new()
 /* Free all storage used by queue */
 void q_free(struct list_head *head)
 {
+    if (!head)
+        return;
     element_t *entry, *safe;
     list_for_each_entry_safe (entry, safe, head, list)
         q_release_element(entry);
@@ -209,11 +211,10 @@ static void merge_two(struct list_head *l1, struct list_head *l2, bool descend)
         element_t *ele_l1 = list_first_entry(l1, element_t, list);
         element_t *ele_l2 = list_first_entry(l2, element_t, list);
 
-        if (descend == (strcmp(ele_l1->value, ele_l2->value) < 0)) {
+        if (descend == (strcmp(ele_l1->value, ele_l2->value) < 0))
             list_move_tail(l2->next, &tmp_head);
-        } else {
+        else
             list_move_tail(l1->next, &tmp_head);
-        }
     }
 
     list_splice(&tmp_head, l2);
