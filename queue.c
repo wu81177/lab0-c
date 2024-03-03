@@ -302,7 +302,6 @@ int q_merge(struct list_head *head, bool descend)
             continue;
         first_q->size += curr->size;
         list_splice_init(curr->q, first_q->q);
-        list_del_init(&curr->chain);
     }
     q_sort(first_q->q, descend);
     return first_q->size;
