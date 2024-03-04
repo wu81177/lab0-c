@@ -304,7 +304,41 @@ int q_merge(struct list_head *head, bool descend)
             continue;
         first_q->size += curr->size;
         list_splice_init(curr->q, first_q->q);
+        // merge_two(first_q->q,curr->q,descend);
     }
     q_sort(first_q->q, descend);
     return first_q->size;
 }
+
+// void q_shuffle(struct list_head *head)
+// {
+//     if (!head || head->next == head->prev)
+//         return;
+//     for (int len = q_size(head) - 1; len > 0; len--) {
+//         int random = 1 + rand() % len;
+//         struct list_head *old = NULL, *new = NULL;
+//         int j = 1;
+//         struct list_head *pos;
+//         list_for_each (pos, head) {
+//             if (j == random) {
+//                 old = pos;
+//             }
+//             if (j == len + 1) {
+//                 new = pos;
+//                 break;
+//             }
+//             j++;
+//         }
+//         struct list_head *pre_new = new->prev;
+//         struct list_head *pre_old = old->prev;
+//         if (old->next == new) {
+//             list_del(old);
+//             list_add(old, new);
+//         } else {
+//             list_del(new);
+//             list_del(old);
+//             list_add(new, pre_old);
+//             list_add(old, pre_new);
+//         }
+//     }
+// }
